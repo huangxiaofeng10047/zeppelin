@@ -1,0 +1,310 @@
+{
+  "paragraphs": [
+    {
+      "text": "%flink.conf\n\nFLINK_HOME /Users/jzhang/github/flink/build-target\nflink.execution.mode local\n\nflink.execution.remote.host localhost\nflink.execution.remote.port 8081\n\nzeppelin.flink.enableHive true\nzeppelin.flink.hive.database default\nzeppelin.flink.hive.version 2.3.4\nzeppelin.pyflink.useIPython false\n\nlocal.number-taskmanager 4\ntaskmanager.numberOfTaskSlots 4\ntaskmanager.heap.size 2048m\n\nzeppelin.pyflink.python /Users/jzhang/anaconda3/bin/python\ntable.exec.resource.default-parallelism 2\n\nHIVE_CONF_DIR /Users/jzhang/Java/lib/apache-hive-2.3.4-bin/conf\n\nflink.execution.packages org.apache.flink:flink-connector-kafka_2.11:1.10-SNAPSHOT,org.apache.flink:flink-connector-kafka-base_2.11:1.10-SNAPSHOT,org.apache.flink:flink-json:1.10-SNAPSHOT",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-11 10:49:50.777",
+      "config": {
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/text",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326565911_-2104641268",
+      "id": "paragraph_1579163110992_270965367",
+      "dateCreated": "2020-02-10 17:22:45.911",
+      "dateStarted": "2020-02-11 10:49:50.811",
+      "dateFinished": "2020-02-11 10:49:50.843",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n\nimport pyflink\nfrom pyflink.dataset import ExecutionEnvironment\nfrom pyflink.datastream import StreamExecutionEnvironment\nfrom pyalink.alink.env import useCustomEnv\nprint(bt_env_2)\nprint(st_env_2)\nmlenv \u003d useCustomEnv(gateway, b_env, bt_env_2, s_env, st_env_2)\n\nfrom pyalink.alink import *\n\nt \u003d bt_env_2.from_elements([(1, 2), (2, 5), (3, 1)], [\u0027a\u0027, \u0027b\u0027])\nsource \u003d TableSourceBatchOp(t)\nsource.print()\n\n# t \u003d st_env.from_elements([(1, 2), (2, 5), (3, 1)], [\u0027a\u0027, \u0027b\u0027])\n# source \u003d TableSourceStreamOp(t)\n# source.print()\n# StreamOperator.execute()",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-10 17:24:41.696",
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nUse one of the following command to start using pyalink:\n使用以下一条命令来开始使用 pyalink：\n - useLocalEnv(parallelism, flinkHome\u003dNone, config\u003dNone)\n - useRemoteEnv(host, port, parallelism, flinkHome\u003dNone, localIp\u003d\"localhost\", config\u003dNone)\nCall resetEnv() to reset environment and switch to another.\n使用 resetEnv() 来重置运行环境，并切换到另一个。\n\n\u003cpyflink.table.table_environment.BatchTableEnvironment object at 0x10ec65908\u003e\n\u003cpyflink.table.table_environment.StreamTableEnvironment object at 0x10ec65d30\u003e\n   a  b\n0  1  2\n1  2  5\n2  3  1\n"
+          }
+        ]
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326565913_2068795471",
+      "id": "paragraph_1578909567081_-1672512634",
+      "dateCreated": "2020-02-10 17:22:45.913",
+      "dateStarted": "2020-02-10 17:24:41.704",
+      "dateFinished": "2020-02-10 17:25:04.130",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n\n## prepare data\nimport numpy as np\nimport pandas as pd\ndata \u003d np.array([\n    [0, 0.0, 0.0, 0.0],\n    [1, 0.1, 0.1, 0.1],\n    [2, 0.2, 0.2, 0.2],\n    [3, 9, 9, 9],\n    [4, 9.1, 9.1, 9.1],\n    [5, 9.2, 9.2, 9.2]\n])\ndf \u003d pd.DataFrame({\"id\": data[:, 0], \"f0\": data[:, 1], \"f1\": data[:, 2], \"f2\": data[:, 3]})\ninOp \u003d BatchOperator.fromDataframe(df, schemaStr\u003d\u0027id double, f0 double, f1 double, f2 double\u0027)\nFEATURE_COLS \u003d [\"f0\", \"f1\", \"f2\"]\nVECTOR_COL \u003d \"vec\"\nPRED_COL \u003d \"pred\"\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-11 10:38:45.217",
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326565913_-1587041818",
+      "id": "paragraph_1579163095585_-1455080652",
+      "dateCreated": "2020-02-10 17:22:45.913",
+      "dateStarted": "2020-02-11 10:38:45.318",
+      "dateFinished": "2020-02-11 10:38:45.957",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n\nvectorAssembler \u003d (\n    VectorAssembler()\n    .setSelectedCols(FEATURE_COLS)\n    .setOutputCol(VECTOR_COL)\n)",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-11 10:38:47.816",
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326565913_-1996647264",
+      "id": "paragraph_1579167234882_101457507",
+      "dateCreated": "2020-02-10 17:22:45.913",
+      "dateStarted": "2020-02-11 10:38:47.823",
+      "dateFinished": "2020-02-11 10:38:48.052",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n\nkMeans \u003d (\n    KMeans()\n    .setVectorCol(VECTOR_COL)\n    .setK(2)\n    .setPredictionCol(PRED_COL)\n)",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-11 10:38:49.912",
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326565914_-1786591337",
+      "id": "paragraph_1579167243326_1747821415",
+      "dateCreated": "2020-02-10 17:22:45.914",
+      "dateStarted": "2020-02-11 10:38:49.919",
+      "dateFinished": "2020-02-11 10:38:50.051",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n\npipeline \u003d Pipeline().add(vectorAssembler).add(kMeans)\ndf \u003d pipeline.fit(inOp).transform(inOp).firstN(9).collectToDataframe()\nz.show(df)",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-11 10:38:52.640",
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "id": "string",
+                      "f0": "string",
+                      "f1": "string",
+                      "f2": "string",
+                      "vec": "string",
+                      "pred": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        },
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "id\tf0\tf1\tf2\tvec\tpred\n0.0\t0.0\t0.0\t0.0\t0.0 0.0 0.0\t1\n1.0\t0.1\t0.1\t0.1\t0.1 0.1 0.1\t1\n2.0\t0.2\t0.2\t0.2\t0.2 0.2 0.2\t1\n3.0\t9.0\t9.0\t9.0\t9.0 9.0 9.0\t0\n4.0\t9.1\t9.1\t9.1\t9.1 9.1 9.1\t0\n5.0\t9.2\t9.2\t9.2\t9.2 9.2 9.2\t0\n"
+          }
+        ]
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326565914_1123275121",
+      "id": "paragraph_1579167252867_-579854741",
+      "dateCreated": "2020-02-10 17:22:45.914",
+      "dateStarted": "2020-02-11 10:38:52.647",
+      "dateFinished": "2020-02-11 10:38:56.672",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-10 17:22:45.914",
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9.0,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326565914_1339672474",
+      "id": "paragraph_1579167261480_1893213848",
+      "dateCreated": "2020-02-10 17:22:45.914",
+      "status": "READY"
+    }
+  ],
+  "name": "KMeans",
+  "id": "2EZCPKR9A",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0-SNAPSHOT",
+  "permissions": {},
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": true
+  },
+  "info": {},
+  "path": "/KMeans"
+}

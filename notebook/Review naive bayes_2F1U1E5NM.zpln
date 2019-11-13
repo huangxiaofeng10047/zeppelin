@@ -1,0 +1,302 @@
+{
+  "paragraphs": [
+    {
+      "text": "%flink.conf\n\nFLINK_HOME /Users/jzhang/github/flink/build-target\nflink.execution.mode local\n\nflink.execution.remote.host localhost\nflink.execution.remote.port 8081\n\nzeppelin.flink.enableHive true\nzeppelin.flink.hive.database default\nzeppelin.flink.hive.version 2.3.4\nzeppelin.flink.planner flink\n\nlocal.number-taskmanager 4\ntaskmanager.numberOfTaskSlots 4\ntaskmanager.heap.size 2048m\nflink.tm.memory 2048\n\n#zeppelin.pyflink.python /Users/jzhang/anaconda3/envs/python-3.6/bin/python\nzeppelin.pyflink.useIPython false\ntable.exec.resource.default-parallelism 5\n\nHIVE_CONF_DIR /Users/jzhang/Java/lib/apache-hive-2.3.4-bin/conf\n\nflink.execution.packages org.apache.flink:flink-connector-kafka_2.11:1.10-SNAPSHOT,org.apache.flink:flink-connector-kafka-base_2.11:1.10-SNAPSHOT,org.apache.flink:flink-json:1.10-SNAPSHOT",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-11 10:22:59.999",
+      "config": {
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/text",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326753924_-1935686878",
+      "id": "paragraph_1579181801157_-1399048914",
+      "dateCreated": "2020-02-10 17:25:53.924",
+      "dateStarted": "2020-02-11 10:23:00.036",
+      "dateFinished": "2020-02-11 10:23:00.056",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n\nimport pyflink\nfrom pyflink.dataset import ExecutionEnvironment\nfrom pyflink.datastream import StreamExecutionEnvironment\nfrom pyalink.alink.env import useCustomEnv\nmlenv \u003d useCustomEnv(gateway,\n                     b_env,bt_env_2, s_env, st_env_2)\nfrom pyalink.alink import *\n\nt \u003d bt_env_2.from_elements([(1, 2), (2, 5), (3, 1)], [\u0027a\u0027, \u0027b\u0027])\nsource \u003d TableSourceBatchOp(t)\nsource.print()\n\n# t \u003d st_env.from_elements([(1, 2), (2, 5), (3, 1)], [\u0027a\u0027, \u0027b\u0027])\n# source \u003d TableSourceStreamOp(t)\n# source.print()\n# StreamOperator.execute()",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-11 10:23:08.416",
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nUse one of the following command to start using pyalink:\n使用以下一条命令来开始使用 pyalink：\n - useLocalEnv(parallelism, flinkHome\u003dNone, config\u003dNone)\n - useRemoteEnv(host, port, parallelism, flinkHome\u003dNone, localIp\u003d\"localhost\", config\u003dNone)\nCall resetEnv() to reset environment and switch to another.\n使用 resetEnv() 来重置运行环境，并切换到另一个。\n\n   a  b\n0  1  2\n1  2  5\n2  3  1\n"
+          }
+        ]
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326753924_1712039587",
+      "id": "paragraph_1579181941300_-1142919900",
+      "dateCreated": "2020-02-10 17:25:53.924",
+      "dateStarted": "2020-02-11 10:23:08.449",
+      "dateFinished": "2020-02-11 10:23:35.594",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n\n## read data\nURL \u003d \"https://alink-release.oss-cn-beijing.aliyuncs.com/data-files/review_rating_train.csv\"\nSCHEMA_STR \u003d \"review_id bigint, rating5 bigint, rating3 bigint, review_context string\"\nLABEL_COL \u003d \"rating5\"\nTEXT_COL \u003d \"review_context\"\nVECTOR_COL \u003d \"vec\"\nPRED_COL \u003d \"pred\"\nPRED_DETAIL_COL \u003d \"predDetail\"\nsource \u003d CsvSourceBatchOp() \\\n    .setFilePath(URL)\\\n    .setSchemaStr(SCHEMA_STR)\\\n    .setFieldDelimiter(\"_alink_\")\\\n    .setQuoteChar(None)\n\n## Split data for train and test\ntrainData \u003d SplitBatchOp().setFraction(0.9).linkFrom(source)\ntestData \u003d trainData.getSideOutput(0)",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-10 23:12:58.848",
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326753924_383581984",
+      "id": "paragraph_1579181526861_-990029471",
+      "dateCreated": "2020-02-10 17:25:53.924",
+      "dateStarted": "2020-02-10 23:12:58.859",
+      "dateFinished": "2020-02-10 23:12:59.058",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n\npipeline \u003d (\n    Pipeline()\n    .add(\n        Segment()\n        .setSelectedCol(TEXT_COL)\n    )\n    .add(\n        StopWordsRemover()\n        .setSelectedCol(TEXT_COL)\n    ).add(\n        DocHashCountVectorizer()\n        .setFeatureType(\"WORD_COUNT\")\n        .setSelectedCol(TEXT_COL)\n        .setOutputCol(VECTOR_COL)\n    )\n)",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-10 23:12:59.066",
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326753925_1705462630",
+      "id": "paragraph_1579181551294_224389931",
+      "dateCreated": "2020-02-10 17:25:53.925",
+      "dateStarted": "2020-02-10 23:12:59.074",
+      "dateFinished": "2020-02-10 23:12:59.197",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n\n## naiveBayes model\nnaiveBayes \u003d (\n    NaiveBayes()\n    .setVectorCol(VECTOR_COL)\n    .setLabelCol(LABEL_COL)\n    .setPredictionCol(PRED_COL)\n    .setPredictionDetailCol(PRED_DETAIL_COL)\n)\nmodel \u003d pipeline.add(naiveBayes).fit(trainData)",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-10 23:12:59.284",
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326753925_-450405495",
+      "id": "paragraph_1579181560715_-200518382",
+      "dateCreated": "2020-02-10 17:25:53.925",
+      "dateStarted": "2020-02-10 23:12:59.290",
+      "dateFinished": "2020-02-10 23:13:03.967",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n\n## evaluation\npredict \u003d model.transform(testData)\nmetrics \u003d (\n    EvalMultiClassBatchOp()\n    .setLabelCol(LABEL_COL)\n    .setPredictionDetailCol(PRED_DETAIL_COL)\n    .linkFrom(predict)\n    .collectMetrics()\n)",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-10 23:24:35.362",
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326753925_-1346946803",
+      "id": "paragraph_1579181569721_-897469364",
+      "dateCreated": "2020-02-10 17:25:53.925",
+      "dateStarted": "2020-02-10 23:24:35.467",
+      "dateFinished": "2020-02-10 23:25:24.178",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n\nprint(\"ConfusionMatrix:\", metrics.getConfusionMatrix())\nprint(\"LabelArray:\", metrics.getLabelArray())\nprint(\"LogLoss:\", metrics.getLogLoss())\nprint(\"Accuracy:\", metrics.getAccuracy())\nprint(\"Kappa:\", metrics.getKappa())\nprint(\"MacroF1:\", metrics.getMacroF1())\nprint(\"Label 1 Accuracy:\", metrics.getAccuracy(\"1\"))\nprint(\"Label 1 Kappa:\", metrics.getKappa(\"1\"))\nprint(\"Label 1 Precision:\", metrics.getPrecision(\"1\"))",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-10 23:25:28.686",
+      "config": {
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9.0,
+        "runOnSelectionChange": true,
+        "title": false,
+        "checkEmpty": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "ConfusionMatrix: [[4987, 327, 229, 204, 292], [28, 1223, 164, 147, 108], [1, 1, 269, 10, 11], [0, 0, 0, 10, 0], [0, 2, 1, 2, 83]]\nLabelArray: [\u00275\u0027, \u00274\u0027, \u00273\u0027, \u00272\u0027, \u00271\u0027]\nLogLoss: 2.330945631084851\nAccuracy: 0.8114582047166317\nKappa: 0.6190950197563011\nMacroF1: 0.5123859853163818\nLabel 1 Accuracy: 0.9486356340288925\nLabel 1 Kappa: 0.27179135595030096\nLabel 1 Precision: 0.9431818181818182\n"
+          }
+        ]
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581326753925_-754038187",
+      "id": "paragraph_1579181578290_1558301914",
+      "dateCreated": "2020-02-10 17:25:53.925",
+      "dateStarted": "2020-02-10 23:25:28.709",
+      "dateFinished": "2020-02-10 23:25:29.225",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%flink.ipyflink\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-02-10 23:25:28.719",
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1581348328706_2026166123",
+      "id": "paragraph_1581348328706_2026166123",
+      "dateCreated": "2020-02-10 23:25:28.717",
+      "status": "READY"
+    }
+  ],
+  "name": "Review naive bayes",
+  "id": "2F1U1E5NM",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0-SNAPSHOT",
+  "permissions": {},
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": true
+  },
+  "info": {},
+  "path": "/Review naive bayes"
+}
