@@ -392,11 +392,12 @@ public class Note implements JsonSerializable {
   public Boolean isCronSupported(ZeppelinConfiguration config) {
     if (config.isZeppelinNotebookCronEnable()) {
       config.getZeppelinNotebookCronFolders();
-      if (StringUtils.isBlank(config.getZeppelinNotebookCronFolders())) {
+      if (config.getZeppelinNotebookCronFolders() == null) {
         return true;
       } else {
         for (String folder : config.getZeppelinNotebookCronFolders().split(",")) {
-          if (getPath().startsWith(folder)) {
+          folder = folder.replaceAll("\\*", "\\.*").replaceAll("\\?", "\\.");
+          if (getName().matches(folder)) {
             return true;
           }
         }

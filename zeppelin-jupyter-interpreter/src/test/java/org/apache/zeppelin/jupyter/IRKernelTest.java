@@ -124,9 +124,9 @@ public class IRKernelTest {
     assertEquals(context.out.toInterpreterResultMessage().get(0).toString(),
             InterpreterResult.Code.SUCCESS, result.code());
     resultMessages = context.out.toInterpreterResultMessage();
-    assertEquals(1, resultMessages.size());
-    assertEquals(resultMessages.toString(),
-            InterpreterResult.Type.IMG, resultMessages.get(0).getType());
+    assertEquals(2, resultMessages.size());
+    assertEquals(resultMessages.get(1).getData(),
+            InterpreterResult.Type.IMG, resultMessages.get(1).getType());
 
     // googlevis
     // TODO(zjffdu) It is weird that googlevis doesn't work with spark 2.2
