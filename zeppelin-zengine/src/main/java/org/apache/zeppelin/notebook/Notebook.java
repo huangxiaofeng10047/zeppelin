@@ -509,6 +509,7 @@ public class Notebook {
   }
 
   public List<NoteInfo> getNotesInfo(Function<String, Boolean> func) {
+    LOGGER.info("Start getNoteList");
     String homescreenNoteId = conf.getString(ConfVars.ZEPPELIN_NOTEBOOK_HOMESCREEN);
     boolean hideHomeScreenNotebookFromList =
         conf.getBoolean(ConfVars.ZEPPELIN_NOTEBOOK_HOMESCREEN_HIDE);
@@ -532,6 +533,7 @@ public class Notebook {
             }
             return name1.compareTo(name2);
           });
+      LOGGER.info("Finish getNoteList");
       return notesInfo;
     }
   }

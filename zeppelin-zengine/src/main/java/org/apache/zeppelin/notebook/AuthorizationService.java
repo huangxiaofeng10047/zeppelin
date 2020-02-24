@@ -59,7 +59,9 @@ public class AuthorizationService implements ClusterEventListener {
     this.noteManager = noteManager;
     this.conf = conf;
     try {
+      LOGGER.info("Start listNoteMeta");
       this.notesMeta = noteManager.listNoteMetas(AuthenticationInfo.ANONYMOUS);
+      LOGGER.info("Finish listNoteMeta");
     } catch (IOException e) {
       throw new RuntimeException("Fail to load notesMeta");
     }
