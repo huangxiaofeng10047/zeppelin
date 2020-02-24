@@ -27,21 +27,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Represent note meta. Currently only permission is included, could extend it to
+ * include other meta info later.
+ */
 public class NoteMeta {
 
   private static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
   private String noteId;
-  private transient String metaPath;
   private Map<String, Set<String>> permissions = new HashMap<>();
 
   public NoteMeta(String noteId, AuthenticationInfo subject) {
     this.noteId = noteId;
     initPermissions(subject);
-  }
-
-  public void setMetaPath(String metaPath) {
-    this.metaPath = metaPath;
   }
 
   // used when creating new note

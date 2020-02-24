@@ -95,7 +95,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     notebookRepo = new InMemoryNotebookRepo();
 
     credentials = new Credentials(conf.credentialsPersist(), conf.getCredentialsPath(), null);
-    notebook = new Notebook(conf, notebookRepo, interpreterFactory, interpreterSettingManager, search,
+    notebook = new Notebook(conf, notebookRepo, new NoteManager(notebookRepo), interpreterFactory, interpreterSettingManager, search,
             credentials, null);
     authorizationService = new AuthorizationService(new NoteManager(notebookRepo), notebook.getConf());
     notebook.setParagraphJobListener(this);
@@ -114,13 +114,13 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     Notebook notebook;
 
     notebookRepo = new DummyNotebookRepo();
-    notebook = new Notebook(conf, notebookRepo, interpreterFactory,
+    notebook = new Notebook(conf, notebookRepo, new NoteManager(notebookRepo), interpreterFactory,
         interpreterSettingManager, null,
         credentials, null);
     assertFalse("Revision is not supported in DummyNotebookRepo", notebook.isRevisionSupported());
 
     notebookRepo = new DummyNotebookRepoWithVersionControl();
-    notebook = new Notebook(conf, notebookRepo, interpreterFactory,
+    notebook = new Notebook(conf, notebookRepo, new NoteManager(notebookRepo), interpreterFactory,
         interpreterSettingManager, null,
         credentials, null);
     assertTrue("Revision is supported in DummyNotebookRepoWithVersionControl",

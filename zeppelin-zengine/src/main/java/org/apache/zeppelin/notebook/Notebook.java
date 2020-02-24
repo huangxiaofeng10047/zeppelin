@@ -65,7 +65,6 @@ public class Notebook {
   private static final Logger LOGGER = LoggerFactory.getLogger(Notebook.class);
 
   private NoteManager noteManager;
-
   private InterpreterFactory replFactory;
   private InterpreterSettingManager interpreterSettingManager;
   private ZeppelinConfiguration conf;
@@ -84,13 +83,14 @@ public class Notebook {
   public Notebook(
       ZeppelinConfiguration conf,
       NotebookRepo notebookRepo,
+      NoteManager noteManager,
       InterpreterFactory replFactory,
       InterpreterSettingManager interpreterSettingManager,
       SearchService noteSearchService,
       Credentials credentials)
       throws IOException {
-    this.noteManager = new NoteManager(notebookRepo);
     this.conf = conf;
+    this.noteManager = noteManager;
     this.notebookRepo = notebookRepo;
     this.replFactory = replFactory;
     this.interpreterSettingManager = interpreterSettingManager;
@@ -107,6 +107,7 @@ public class Notebook {
   public Notebook(
       ZeppelinConfiguration conf,
       NotebookRepo notebookRepo,
+      NoteManager noteManager,
       InterpreterFactory replFactory,
       InterpreterSettingManager interpreterSettingManager,
       SearchService noteSearchService,
@@ -116,6 +117,7 @@ public class Notebook {
     this(
         conf,
         notebookRepo,
+        noteManager,
         replFactory,
         interpreterSettingManager,
         noteSearchService,

@@ -223,7 +223,7 @@ public class NotebookRepoSync implements NotebookRepoWithVersionControl {
     return getRepo(0).get(noteId, notePath, subject);
   }
 
-  /* get note from specific repo (for tests) */
+  /*  Get NoteMeta from specific repo (for tests) */
   NoteMeta getNoteMeta(int repoIndex, String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
     return getRepo(repoIndex).getNoteMeta(noteId, metaPath, subject);
   }
@@ -236,7 +236,7 @@ public class NotebookRepoSync implements NotebookRepoWithVersionControl {
     return getRepo(0).getNoteMeta(noteId, metaPath, subject);
   }
 
-  /* get note from specific repo (for tests) */
+  /* Get note from specific repo (for tests) */
   Note get(int repoIndex, String noteId, String noteName, AuthenticationInfo subject) throws IOException {
     return getRepo(repoIndex).get(noteId, noteName, subject);
   }
@@ -263,7 +263,7 @@ public class NotebookRepoSync implements NotebookRepoWithVersionControl {
   }
 
   /**
-   *  Saves to all repositories
+   *  Saves NoteMeta to all repositories
    */
   @Override
   public void saveNoteMeta(NoteMeta noteMeta, String metaPath, AuthenticationInfo subject) throws IOException {

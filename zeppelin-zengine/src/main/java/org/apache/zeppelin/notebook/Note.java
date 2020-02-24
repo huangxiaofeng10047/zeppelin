@@ -112,7 +112,6 @@ public class Note implements JsonSerializable {
 
   // The front end needs to judge TRASH_FOLDER according to the path
   private String path;
-  private String metaPath;
 
   /********************************** transient fields ******************************************/
   private transient boolean loaded = false;
@@ -151,10 +150,6 @@ public class Note implements JsonSerializable {
 
   public String getPath() {
     return path;
-  }
-
-  public String getMetaPath() {
-    return metaPath;
   }
 
   public String getParentPath() {
@@ -275,7 +270,6 @@ public class Note implements JsonSerializable {
       this.path = this.path.substring(0, pos + 1) + this.name;
     }
     int pos = this.path.lastIndexOf("/");
-    this.metaPath = this.path.substring(0, pos + 1) + "." + this.name;
   }
 
   public InterpreterFactory getInterpreterFactory() {

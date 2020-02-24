@@ -46,6 +46,7 @@ import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
+import org.apache.zeppelin.notebook.NoteMeta;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,6 +172,11 @@ public class GCSNotebookRepo implements NotebookRepo {
   }
 
   @Override
+  public Map<String, NoteMeta> listNoteMeta(AuthenticationInfo subject) throws IOException {
+    return null;
+  }
+
+  @Override
   public Note get(String noteId, String notePath, AuthenticationInfo subject) throws IOException {
     BlobId blobId = makeBlobId(noteId, notePath);
     byte[] contents;
@@ -226,6 +232,26 @@ public class GCSNotebookRepo implements NotebookRepo {
 
   @Override
   public void remove(String folderPath, AuthenticationInfo subject) {
+
+  }
+
+  @Override
+  public NoteMeta getNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+    return null;
+  }
+
+  @Override
+  public void saveNoteMeta(NoteMeta noteMeta, String metaPath, AuthenticationInfo subject) throws IOException {
+
+  }
+
+  @Override
+  public void removeNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+
+  }
+
+  @Override
+  public void moveNoteMeta(String noteId, String metaPath, String newMetaPath, AuthenticationInfo subject) throws IOException {
 
   }
 

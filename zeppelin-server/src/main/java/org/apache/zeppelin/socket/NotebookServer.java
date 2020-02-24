@@ -624,8 +624,9 @@ public class NotebookServer extends WebSocketServlet
       subject = new AuthenticationInfo(StringUtils.EMPTY);
     }
     //send first to requesting user
+    AuthorizationService authorizationService = getNotebookAuthorizationService();
     List<NoteInfo> notesInfo = getNotebook().getNotesInfo(
-        noteId -> getNotebookAuthorizationService().isReader(noteId, userAndRoles));
+        noteId -> authorizationService.isReader(noteId, userAndRoles));
     Message message = new Message(OP.NOTES_INFO).put("notes", notesInfo);
     connectionManager.multicastToUser(subject.getUser(), message);
     //to others afterwards

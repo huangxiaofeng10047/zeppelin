@@ -156,8 +156,8 @@ public class ZeppelinServer extends ResourceConfig {
             bindAsContract(GsonProvider.class).in(Singleton.class);
             bindAsContract(WebApplicationExceptionMapper.class).in(Singleton.class);
             bindAsContract(AdminService.class).in(Singleton.class);
-            bindAsContract(AuthorizationService.class).to(Singleton.class);
-            bindAsContract(NoteManager.class).to(Singleton.class);
+            bindAsContract(AuthorizationService.class).in(Singleton.class);
+            bindAsContract(NoteManager.class).in(Singleton.class);
             // TODO(jl): Will make it more beautiful
             if (!StringUtils.isBlank(conf.getShiroPath())) {
               bind(ShiroAuthenticationService.class).to(AuthenticationService.class).in(Singleton.class);

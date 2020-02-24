@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
+import org.apache.zeppelin.notebook.NoteMeta;
 import org.apache.zeppelin.notebook.repo.NotebookRepoWithVersionControl;
 import org.apache.zeppelin.notebook.repo.NotebookRepoSettingsInfo;
 import org.apache.zeppelin.notebook.repo.zeppelinhub.model.Instance;
@@ -194,6 +195,11 @@ public class ZeppelinHubRepo implements NotebookRepoWithVersionControl {
   }
 
   @Override
+  public Map<String, NoteMeta> listNoteMeta(AuthenticationInfo subject) throws IOException {
+    return null;
+  }
+
+  @Override
   public Note get(String noteId, String noteName, AuthenticationInfo subject) throws IOException {
     if (StringUtils.isBlank(noteId) || !isSubjectValid(subject)) {
       return EMPTY_NOTE;
@@ -241,6 +247,26 @@ public class ZeppelinHubRepo implements NotebookRepoWithVersionControl {
 
   @Override
   public void remove(String folderPath, AuthenticationInfo subject) {
+
+  }
+
+  @Override
+  public NoteMeta getNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+    return null;
+  }
+
+  @Override
+  public void saveNoteMeta(NoteMeta noteMeta, String metaPath, AuthenticationInfo subject) throws IOException {
+
+  }
+
+  @Override
+  public void removeNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+
+  }
+
+  @Override
+  public void moveNoteMeta(String noteId, String metaPath, String newMetaPath, AuthenticationInfo subject) throws IOException {
 
   }
 

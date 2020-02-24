@@ -101,7 +101,7 @@ public class NotebookRepoSyncTest {
     search = mock(SearchService.class);
     notebookRepoSync = new NotebookRepoSync(conf);
     credentials = new Credentials(conf.credentialsPersist(), conf.getCredentialsPath(), null);
-    notebookSync = new Notebook(conf, notebookRepoSync, factory, interpreterSettingManager, search, credentials, null);
+    notebookSync = new Notebook(conf, notebookRepoSync, new NoteManager(notebookRepoSync), factory, interpreterSettingManager, search, credentials, null);
     anonymous = new AuthenticationInfo("anonymous");
     authorizationService = new AuthorizationService(new NoteManager(notebookRepoSync), conf);
   }
@@ -241,7 +241,7 @@ public class NotebookRepoSyncTest {
     System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_ONE_WAY_SYNC.getVarName(), "true");
     conf = ZeppelinConfiguration.create();
     notebookRepoSync = new NotebookRepoSync(conf);
-    notebookSync = new Notebook(conf, notebookRepoSync, factory, interpreterSettingManager, search, credentials, null);
+    notebookSync = new Notebook(conf, notebookRepoSync, new NoteManager(notebookRepoSync), factory, interpreterSettingManager, search, credentials, null);
 
     // check that both storage repos are empty
     assertTrue(notebookRepoSync.getRepoCount() > 1);
@@ -288,7 +288,7 @@ public class NotebookRepoSyncTest {
     ZeppelinConfiguration vConf = ZeppelinConfiguration.create();
 
     NotebookRepoSync vRepoSync = new NotebookRepoSync(vConf);
-    Notebook vNotebookSync = new Notebook(vConf, vRepoSync, factory, interpreterSettingManager, search, credentials, null);
+    Notebook vNotebookSync = new Notebook(vConf, vRepoSync, new NoteManager(vRepoSync), factory, interpreterSettingManager, search, credentials, null);
 
     // one git versioned storage initialized
     assertThat(vRepoSync.getRepoCount()).isEqualTo(1);

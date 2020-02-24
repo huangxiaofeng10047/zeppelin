@@ -37,10 +37,10 @@ public interface NotebookRepo {
 
   /**
    * Lists notebook information about all notebooks in storage. This method should only read
-   * the note file name, rather than reading all notes which usually takes long time.
+   * the note file name, rather than reading all note content which usually takes long time.
    *
    * @param subject contains user information.
-   * @return
+   * @return Map of noteId -> NoteInfo
    * @throws IOException
    */
   @ZeppelinApi
@@ -48,15 +48,15 @@ public interface NotebookRepo {
 
   /**
    * Lists note meta info. This method should only read
-   * the metadata file of note, rather than reading all notes which usually takes long time.
+   * the metadata file of note, rather than reading all note content which usually takes long time.
    * @param subject
-   * @return
+   * @return Map of noteId -> NoteMeta
    * @throws IOException
    */
   Map<String, NoteMeta> listNoteMeta(AuthenticationInfo subject) throws IOException;
 
   /**
-   * Get the notebook with the given id and given notePath.
+   * Get the notebook with the given noteId and given notePath.
    *
    * @param noteId   is note id.
    * @param notePath is note path

@@ -28,6 +28,7 @@ import org.apache.zeppelin.interpreter.InterpreterNotFoundException;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.notebook.ApplicationState;
 import org.apache.zeppelin.notebook.Note;
+import org.apache.zeppelin.notebook.NoteManager;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.notebook.repo.NotebookRepo;
@@ -60,6 +61,7 @@ public class HeliumApplicationFactoryTest extends AbstractInterpreterTest {
         new Notebook(
             conf,
             notebookRepo,
+            new NoteManager(notebookRepo),
             interpreterFactory,
             interpreterSettingManager,
             search,

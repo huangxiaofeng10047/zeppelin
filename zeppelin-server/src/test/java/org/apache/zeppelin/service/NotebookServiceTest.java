@@ -111,6 +111,7 @@ public class NotebookServiceTest {
         new Notebook(
             zeppelinConfiguration,
             notebookRepo,
+            new NoteManager(notebookRepo),
             mockInterpreterFactory,
             mockInterpreterSettingManager,
             searchService,

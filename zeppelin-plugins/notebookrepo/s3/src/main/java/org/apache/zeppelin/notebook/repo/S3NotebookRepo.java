@@ -35,6 +35,7 @@ import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
+import org.apache.zeppelin.notebook.NoteMeta;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,6 +202,11 @@ public class S3NotebookRepo implements NotebookRepo {
     return notesInfo;
   }
 
+  @Override
+  public Map<String, NoteMeta> listNoteMeta(AuthenticationInfo subject) throws IOException {
+    return null;
+  }
+
   private NoteInfo getNoteInfo(String key) throws IOException {
     return new NoteInfo(getNoteId(key), getNotePath(rootFolder, key));
   }
@@ -283,6 +289,26 @@ public class S3NotebookRepo implements NotebookRepo {
 
   @Override
   public void remove(String folderPath, AuthenticationInfo subject) {
+
+  }
+
+  @Override
+  public NoteMeta getNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+    return null;
+  }
+
+  @Override
+  public void saveNoteMeta(NoteMeta noteMeta, String metaPath, AuthenticationInfo subject) throws IOException {
+
+  }
+
+  @Override
+  public void removeNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+
+  }
+
+  @Override
+  public void moveNoteMeta(String noteId, String metaPath, String newMetaPath, AuthenticationInfo subject) throws IOException {
 
   }
 

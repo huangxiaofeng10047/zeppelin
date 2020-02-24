@@ -22,6 +22,7 @@ import static com.mongodb.client.model.Filters.eq;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.zeppelin.notebook.NoteMeta;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -141,6 +142,11 @@ public class MongoNotebookRepo implements NotebookRepo {
     }
 
     return infos;
+  }
+
+  @Override
+  public Map<String, NoteMeta> listNoteMeta(AuthenticationInfo subject) throws IOException {
+    return null;
   }
 
   @Override
@@ -326,6 +332,26 @@ public class MongoNotebookRepo implements NotebookRepo {
         folders.deleteOne(eq(Fields.ID, nodeId));
       }
     }
+  }
+
+  @Override
+  public NoteMeta getNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+    return null;
+  }
+
+  @Override
+  public void saveNoteMeta(NoteMeta noteMeta, String metaPath, AuthenticationInfo subject) throws IOException {
+
+  }
+
+  @Override
+  public void removeNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+
+  }
+
+  @Override
+  public void moveNoteMeta(String noteId, String metaPath, String newMetaPath, AuthenticationInfo subject) throws IOException {
+
   }
 
   @Override
