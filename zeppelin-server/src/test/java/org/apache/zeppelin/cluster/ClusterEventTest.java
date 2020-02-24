@@ -36,6 +36,7 @@ import org.apache.zeppelin.interpreter.thrift.ParagraphInfo;
 import org.apache.zeppelin.interpreter.thrift.ServiceException;
 import org.apache.zeppelin.notebook.AuthorizationService;
 import org.apache.zeppelin.notebook.Note;
+import org.apache.zeppelin.notebook.NoteManager;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.notebook.scheduler.QuartzSchedulerService;
@@ -100,7 +101,7 @@ public class ClusterEventTest extends ZeppelinServerMock {
 
     ZeppelinServerMock.startUp("ClusterEventTest", zconf);
     notebook = TestUtils.getInstance(Notebook.class);
-    authorizationService = new AuthorizationService(notebook, zconf);
+    authorizationService = new AuthorizationService(notebook.getNoteManager(), zconf);
 
     schedulerService = new QuartzSchedulerService(zconf, notebook);
     notebookServer = spy(NotebookServer.getInstance());

@@ -21,6 +21,7 @@ import org.apache.zeppelin.annotation.ZeppelinApi;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
+import org.apache.zeppelin.notebook.NoteMeta;
 import org.apache.zeppelin.user.AuthenticationInfo;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Notebook repository (persistence layer) abstraction
+ * Notebook repository (persistence layer) abstraction.
  */
 public interface NotebookRepo {
 
@@ -36,7 +37,7 @@ public interface NotebookRepo {
 
   /**
    * Lists notebook information about all notebooks in storage. This method should only read
-   * the metadata of note, rather than reading all notes which usually takes long time.
+   * the note file name, rather than reading all notes which usually takes long time.
    *
    * @param subject contains user information.
    * @return
@@ -44,6 +45,15 @@ public interface NotebookRepo {
    */
   @ZeppelinApi
   Map<String, NoteInfo> list(AuthenticationInfo subject) throws IOException;
+
+  /**
+   * Lists note meta info. This method should only read
+   * the metadata file of note, rather than reading all notes which usually takes long time.
+   * @param subject
+   * @return
+   * @throws IOException
+   */
+  Map<String, NoteMeta> listNoteMeta(AuthenticationInfo subject) throws IOException;
 
   /**
    * Get the notebook with the given id and given notePath.
@@ -113,6 +123,50 @@ public interface NotebookRepo {
   void remove(String folderPath, AuthenticationInfo subject) throws IOException;
 
   /**
+   * Get NoteMeta given the noteId and note metaPath
+   * @param noteId
+   * @param metaPath
+   * @param subject
+   * @return
+   * @throws IOException
+   */
+  @ZeppelinApi
+  NoteMeta getNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException;
+
+  /**
+   * Save NoteMeta to the given note metaPath
+   * @param noteMeta
+   * @param subject
+   * @throws IOException
+   */
+  @ZeppelinApi
+  void saveNoteMeta(NoteMeta noteMeta, String metaPath, AuthenticationInfo subject) throws IOException;
+
+  /**
+   * Remove NoteMeta with given id and metaPath
+   *
+   * @param noteId   is note id.
+   * @param metaPath is note meta path
+   * @param subject  contains note meta info.
+   * @throws IOException
+   */
+  @ZeppelinApi
+  void removeNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException;
+
+  /**
+   *
+   * Move NoteMeta to another location.
+   *
+   * @param noteId
+   * @param metaPath
+   * @param newMetaPath
+   * @throws IOException
+   */
+  @ZeppelinApi
+  void moveNoteMeta(String noteId, String metaPath, String newMetaPath,
+            AuthenticationInfo subject) throws IOException;
+
+  /**
    * Release any underlying resources
    */
   @ZeppelinApi
@@ -144,12 +198,23 @@ public interface NotebookRepo {
     return (notePath + "_" + noteId + ".zpln").substring(1);
   }
 
+  default String buildNoteMetaFileName(String noteId, String metaPath) throws IOException {
+    if (!metaPath.startsWith("/")) {
+      throw new IOException("Invalid metaPath: " + metaPath);
+    }
+    return (metaPath + "_" + noteId + ".meta").substring(1);
+  }
+
   default String buildNoteFileName(Note note) throws IOException {
     return buildNoteFileName(note.getId(), note.getPath());
   }
 
   default String buildNoteTempFileName(Note note) {
     return (note.getPath() + "_" + note.getId() + ".tmp").substring(1);
+  }
+
+  default String buildNoteMetaTempFileName(String noteId, String metaPath) {
+    return (metaPath + "_" + noteId + ".tmp").substring(1);
   }
 
   default String getNoteId(String noteFileName) throws IOException {
@@ -177,6 +242,20 @@ public interface NotebookRepo {
       return noteFileName.substring(rootNoteFolder.length(), index);
     } catch (StringIndexOutOfBoundsException e) {
       throw new IOException("Invalid note name: " + noteFileName);
+    }
+  }
+
+  default String getNoteMetaPath(String rootNoteFolder, String metaFileName)
+          throws IOException {
+    int index = metaFileName.lastIndexOf("_");
+    if (index == -1) {
+      throw new IOException(
+              "Invalid note name, no '_' in note meta name: " + metaFileName);
+    }
+    try {
+      return metaFileName.substring(rootNoteFolder.length(), index);
+    } catch (StringIndexOutOfBoundsException e) {
+      throw new IOException("Invalid note meta name: " + metaFileName);
     }
   }
 }

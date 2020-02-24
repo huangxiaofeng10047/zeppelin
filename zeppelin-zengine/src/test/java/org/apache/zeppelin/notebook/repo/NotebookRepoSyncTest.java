@@ -39,6 +39,7 @@ import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
 import org.apache.zeppelin.notebook.AuthorizationService;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
+import org.apache.zeppelin.notebook.NoteManager;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.search.SearchService;
@@ -102,7 +103,7 @@ public class NotebookRepoSyncTest {
     credentials = new Credentials(conf.credentialsPersist(), conf.getCredentialsPath(), null);
     notebookSync = new Notebook(conf, notebookRepoSync, factory, interpreterSettingManager, search, credentials, null);
     anonymous = new AuthenticationInfo("anonymous");
-    authorizationService = new AuthorizationService(notebookSync, conf);
+    authorizationService = new AuthorizationService(new NoteManager(notebookRepoSync), conf);
   }
 
   @After

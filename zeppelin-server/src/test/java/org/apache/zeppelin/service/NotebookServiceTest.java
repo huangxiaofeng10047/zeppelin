@@ -53,6 +53,7 @@ import org.apache.zeppelin.interpreter.ManagedInterpreterGroup;
 import org.apache.zeppelin.notebook.AuthorizationService;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
+import org.apache.zeppelin.notebook.NoteManager;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.notebook.repo.InMemoryNotebookRepo;
@@ -116,7 +117,7 @@ public class NotebookServiceTest {
             credentials,
             null);
     AuthorizationService authorizationService =
-        new AuthorizationService(notebook, notebook.getConf());
+        new AuthorizationService(new NoteManager(notebookRepo), notebook.getConf());
     SchedulerService schedulerService = new QuartzSchedulerService(zeppelinConfiguration, notebook);
     notebookService =
         new NotebookService(

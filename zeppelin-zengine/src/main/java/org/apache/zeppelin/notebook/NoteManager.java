@@ -20,11 +20,11 @@ package org.apache.zeppelin.notebook;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.notebook.repo.NotebookRepo;
-import org.apache.zeppelin.scheduler.Job;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +56,7 @@ public class NoteManager {
   // noteId -> notePath
   private Map<String, String> notesInfo;
 
+  @Inject
   public NoteManager(NotebookRepo notebookRepo) throws IOException {
     this.notebookRepo = notebookRepo;
     this.root = new Folder("/", notebookRepo);
@@ -168,6 +169,27 @@ public class NoteManager {
     note.setLoaded(true);
   }
 
+  /**
+   * Save note to NoteManager, it won't check duplicates, this is used when updating note.
+   *
+   * @param noteMeta
+   * @param subject
+   * @throws IOException
+   */
+  public void saveNoteMeta(NoteMeta noteMeta, AuthenticationInfo subject) throws IOException {
+    this.notebookRepo.saveNoteMeta(noteMeta,
+            getMetaPathFromNotePath(notesInfo.get(noteMeta.getNoteId())),
+            subject);
+  }
+
+  private String getMetaPathFromNotePath(String notePath) throws IOException {
+    int pos = notePath.lastIndexOf("/");
+    if (pos == -1) {
+      throw new IOException("Invalid notePath: " + notePath);
+    }
+    return notePath.substring(0, pos + 1) + "." + notePath.substring(pos + 1);
+  }
+
   public void addNote(Note note, AuthenticationInfo subject) throws IOException {
     addOrUpdateNoteNode(note, true);
     this.notebookRepo.save(note, subject);
@@ -196,6 +218,7 @@ public class NoteManager {
     Folder folder = getOrCreateFolder(getFolderName(notePath));
     folder.removeNote(getNoteName(notePath));
     this.notebookRepo.remove(noteId, notePath, subject);
+    this.notebookRepo.removeNoteMeta(noteId, getMetaPathFromNotePath(notePath), subject);
   }
 
   public void moveNote(String noteId,
@@ -219,8 +242,9 @@ public class NoteManager {
 
     // update notebookrepo
     this.notebookRepo.move(noteId, notePath, newNotePath, subject);
+    this.notebookRepo.moveNoteMeta(noteId, getMetaPathFromNotePath(notePath),
+            getMetaPathFromNotePath(newNotePath), subject);
   }
-
 
   public void moveFolder(String folderPath,
                          String newFolderPath,
@@ -342,6 +366,10 @@ public class NoteManager {
   private String getNoteName(String notePath) {
     int pos = notePath.lastIndexOf("/");
     return notePath.substring(pos + 1);
+  }
+
+  public Map<String, NoteMeta> listNoteMetas(AuthenticationInfo subject) throws IOException {
+    return notebookRepo.listNoteMeta(subject);
   }
 
   /**

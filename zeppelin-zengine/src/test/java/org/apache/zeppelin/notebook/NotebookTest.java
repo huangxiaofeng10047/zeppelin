@@ -97,7 +97,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     credentials = new Credentials(conf.credentialsPersist(), conf.getCredentialsPath(), null);
     notebook = new Notebook(conf, notebookRepo, interpreterFactory, interpreterSettingManager, search,
             credentials, null);
-    authorizationService = new AuthorizationService(notebook, notebook.getConf());
+    authorizationService = new AuthorizationService(new NoteManager(notebookRepo), notebook.getConf());
     notebook.setParagraphJobListener(this);
     schedulerService = new QuartzSchedulerService(conf, notebook);
 
@@ -139,6 +139,11 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
       return new HashMap<>();
     }
 
+    @Override
+    public Map<String, NoteMeta> listNoteMeta(AuthenticationInfo subject) throws IOException {
+      return null;
+    }
+
 
     @Override
     public Note get(String noteId, String notePath, AuthenticationInfo subject) throws IOException {
@@ -167,6 +172,26 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
     @Override
     public void remove(String folderPath, AuthenticationInfo subject) {
+
+    }
+
+    @Override
+    public NoteMeta getNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+      return null;
+    }
+
+    @Override
+    public void saveNoteMeta(NoteMeta noteMeta, String metaPath, AuthenticationInfo subject) throws IOException {
+
+    }
+
+    @Override
+    public void removeNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+
+    }
+
+    @Override
+    public void moveNoteMeta(String noteId, String metaPath, String newMetaPath, AuthenticationInfo subject) throws IOException {
 
     }
 
@@ -222,6 +247,11 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     }
 
     @Override
+    public Map<String, NoteMeta> listNoteMeta(AuthenticationInfo subject) throws IOException {
+      return null;
+    }
+
+    @Override
     public Note get(String noteId, String notePath, AuthenticationInfo subject) throws IOException {
       return null;
     }
@@ -248,6 +278,26 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
     @Override
     public void remove(String folderPath, AuthenticationInfo subject) {
+
+    }
+
+    @Override
+    public NoteMeta getNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+      return null;
+    }
+
+    @Override
+    public void saveNoteMeta(NoteMeta noteMeta, String metaPath, AuthenticationInfo subject) throws IOException {
+
+    }
+
+    @Override
+    public void removeNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+
+    }
+
+    @Override
+    public void moveNoteMeta(String noteId, String metaPath, String newMetaPath, AuthenticationInfo subject) throws IOException {
 
     }
 

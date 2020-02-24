@@ -17,8 +17,6 @@
 
 package org.apache.zeppelin.notebook;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -36,7 +34,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,14 +47,43 @@ public class AuthorizationService implements ClusterEventListener {
   private static final Set<String> EMPTY_SET = new HashSet<>();
 
   private ZeppelinConfiguration conf;
-  private Notebook notebook;
+  private NoteManager noteManager;
   // contains roles for each user (username --> roles)
   private Map<String, Set<String>> userRoles = new HashMap<>();
 
+  // noteId --> NoteMeta
+  private Map<String, NoteMeta> notesMeta;
+
   @Inject
-  public AuthorizationService(Notebook notebook, ZeppelinConfiguration conf) {
-    this.notebook = notebook;
+  public AuthorizationService(NoteManager noteManager, ZeppelinConfiguration conf) {
+    this.noteManager = noteManager;
     this.conf = conf;
+    try {
+      this.notesMeta = noteManager.listNoteMetas(AuthenticationInfo.ANONYMOUS);
+    } catch (IOException e) {
+      throw new RuntimeException("Fail to load notesMeta");
+    }
+    // create NoteMeta for these notes that has no meta file.
+    for (String noteId: noteManager.getNotesInfo().keySet()) {
+      if (!notesMeta.containsKey(noteId)) {
+        notesMeta.put(noteId, new NoteMeta(noteId, AuthenticationInfo.ANONYMOUS));
+      }
+    }
+  }
+
+  public void createNoteMeta(String noteId, AuthenticationInfo subject) throws IOException {
+    NoteMeta noteMeta =  new NoteMeta(noteId, subject);
+    this.notesMeta.put(noteId, noteMeta);
+    noteManager.saveNoteMeta(noteMeta, subject);
+  }
+
+  public void saveNoteMeta(String noteId, AuthenticationInfo subject) throws IOException {
+    NoteMeta noteMeta = notesMeta.get(noteId);
+    if (noteMeta == null) {
+      LOGGER.warn("No noteMeta for note: " + noteId);
+      return;
+    }
+    noteManager.saveNoteMeta(noteMeta, subject);
   }
 
   private Set<String> validateUser(Set<String> users) {
@@ -77,7 +103,7 @@ public class AuthorizationService implements ClusterEventListener {
 
   private void inlineSetOwners(String noteId, Set<String> entities) throws IOException {
     entities = validateUser(entities);
-    notebook.getNote(noteId).setOwners(entities);
+    notesMeta.get(noteId).setOwners(entities);
   }
 
   public void setReaders(String noteId, Set<String> entities) throws IOException {
@@ -87,7 +113,7 @@ public class AuthorizationService implements ClusterEventListener {
 
   private void inlineSetReaders(String noteId, Set<String> entities) throws IOException {
     entities = validateUser(entities);
-    notebook.getNote(noteId).setReaders(entities);
+    notesMeta.get(noteId).setReaders(entities);
   }
 
   public void setRunners(String noteId, Set<String> entities) throws IOException {
@@ -97,7 +123,7 @@ public class AuthorizationService implements ClusterEventListener {
 
   private void inlineSetRunners(String noteId, Set<String> entities) throws IOException {
     entities = validateUser(entities);
-    notebook.getNote(noteId).setRunners(entities);
+    notesMeta.get(noteId).setRunners(entities);
   }
 
   public void setWriters(String noteId, Set<String> entities) throws IOException {
@@ -107,128 +133,72 @@ public class AuthorizationService implements ClusterEventListener {
 
   private void inlineSetWriters(String noteId, Set<String> entities) throws IOException {
     entities = validateUser(entities);
-    notebook.getNote(noteId).setWriters(entities);
+    notesMeta.get(noteId).setWriters(entities);
+  }
+
+  public NoteMeta getNoteMeta(String noteId) {
+    return notesMeta.get(noteId);
   }
 
   public Set<String> getOwners(String noteId) {
-    try {
-      Note note = notebook.getNote(noteId);
-      if (note == null) {
-        LOGGER.warn("Note " + noteId + " not found");
-        return EMPTY_SET;
-      }
-      return note.getOwners();
-    } catch (IOException e) {
-      LOGGER.warn("Fail to getOwner for note: " + noteId, e);
+    NoteMeta noteMeta = notesMeta.get(noteId);
+    if (noteMeta == null) {
+      LOGGER.warn("NoteMeta for note: " + noteId + " not found");
       return EMPTY_SET;
     }
+    return noteMeta.getOwners();
   }
 
   public Set<String> getReaders(String noteId) {
-    try {
-      Note note = notebook.getNote(noteId);
-      if (note == null) {
-        LOGGER.warn("Note " + noteId + " not found");
-        return EMPTY_SET;
-      }
-      return note.getReaders();
-    } catch (IOException e) {
-      LOGGER.warn("Fail to getReaders for note: " + noteId, e);
+    NoteMeta noteMeta = notesMeta.get(noteId);
+    if (noteMeta == null) {
+      LOGGER.warn("NoteMeta for note: " + noteId + " not found");
       return EMPTY_SET;
     }
+    return noteMeta.getReaders();
   }
 
   public Set<String> getRunners(String noteId) {
-    try {
-      Note note = notebook.getNote(noteId);
-      if (note == null) {
-        LOGGER.warn("Note " + noteId + " not found");
-        return EMPTY_SET;
-      }
-      return note.getRunners();
-    } catch (IOException e) {
-      LOGGER.warn("Fail to getRunners for note: " + noteId, e);
+    NoteMeta noteMeta = notesMeta.get(noteId);
+    if (noteMeta == null) {
+      LOGGER.warn("NoteMeta for note: " + noteId + " not found");
       return EMPTY_SET;
     }
+    return noteMeta.getRunners();
   }
 
   public Set<String> getWriters(String noteId) {
-    try {
-      Note note = notebook.getNote(noteId);
-      if (note == null) {
-        LOGGER.warn("Note " + noteId + " not found");
-        return EMPTY_SET;
-      }
-      return note.getWriters();
-    } catch (IOException e) {
-      LOGGER.warn("Fail to getWriters for note: " + noteId, e);
+    NoteMeta noteMeta = notesMeta.get(noteId);
+    if (noteMeta == null) {
+      LOGGER.warn("NoteMeta for note: " + noteId + " not found");
       return EMPTY_SET;
     }
+    return noteMeta.getWriters();
   }
 
   public boolean isOwner(String noteId, Set<String> entities) {
-    try {
-      Note note = notebook.getNote(noteId);
-      if (note == null) {
-        LOGGER.warn("Note " + noteId + " not found");
-        return false;
-      }
-      return isMember(entities, note.getOwners()) || isAdmin(entities);
-    } catch (IOException e) {
-      LOGGER.warn("Fail to check isOwner for note: " + noteId, e);
-      return false;
-    }
+    return isMember(entities, getOwners(noteId)) || isAdmin(entities);
   }
 
   public boolean isWriter(String noteId, Set<String> entities) {
-    try {
-      Note note = notebook.getNote(noteId);
-      if (note == null) {
-        LOGGER.warn("Note " + noteId + " not found");
-        return false;
-      }
-      return isMember(entities, note.getWriters()) ||
-              isMember(entities, note.getOwners()) ||
-              isAdmin(entities);
-    } catch (IOException e) {
-      LOGGER.warn("Fail to check isWriter for note: " + noteId, e);
-      return false;
-    }
+    return isMember(entities, getWriters(noteId)) ||
+            isMember(entities, getOwners(noteId)) ||
+            isAdmin(entities);
   }
 
   public boolean isReader(String noteId, Set<String> entities) {
-    try {
-      Note note = notebook.getNote(noteId);
-      if (note == null) {
-        LOGGER.warn("Note " + noteId + " not found");
-        return false;
-      }
-      return isMember(entities, note.getReaders()) ||
-              isMember(entities, note.getOwners()) ||
-              isMember(entities, note.getWriters()) ||
-              isMember(entities, note.getRunners()) ||
-              isAdmin(entities);
-    } catch (IOException e) {
-      LOGGER.warn("Fail to check isReader for note: " + noteId, e);
-      return false;
-    }
+    return isMember(entities, getReaders(noteId)) ||
+            isMember(entities, getOwners(noteId)) ||
+            isMember(entities, getWriters(noteId)) ||
+            isMember(entities, getRunners(noteId)) ||
+            isAdmin(entities);
   }
 
   public boolean isRunner(String noteId, Set<String> entities) {
-    try {
-      Note note = notebook.getNote(noteId);
-      if (note == null) {
-        LOGGER.warn("Note " + noteId + " not found");
-        return false;
-      }
-      return isMember(entities, note.getRunners()) ||
-              isMember(entities, note.getWriters()) ||
-              isMember(entities, note.getOwners()) ||
-              isAdmin(entities);
-    } catch (IOException e) {
-      LOGGER.warn("Fail to check isRunner for note: " + noteId, e);
-      return false;
-    }
+    return isMember(entities, getRunners(noteId)) ||
+            isMember(entities, getWriters(noteId)) ||
+            isMember(entities, getOwners(noteId)) ||
+            isAdmin(entities);
   }
 
   private boolean isAdmin(Set<String> entities) {
@@ -323,10 +293,14 @@ public class AuthorizationService implements ClusterEventListener {
   }
 
   public void inlineClearPermission(String noteId) throws IOException {
-    notebook.getNote(noteId).setReaders(Sets.newHashSet());
-    notebook.getNote(noteId).setRunners(Sets.newHashSet());
-    notebook.getNote(noteId).setWriters(Sets.newHashSet());
-    notebook.getNote(noteId).setOwners(Sets.newHashSet());
+    NoteMeta noteMeta = notesMeta.get(noteId);
+    if (noteMeta == null) {
+      throw new IOException("No notemeta for note: " + noteId);
+    }
+    noteMeta.setReaders(Sets.newHashSet());
+    noteMeta.setRunners(Sets.newHashSet());
+    noteMeta.setWriters(Sets.newHashSet());
+    noteMeta.setOwners(Sets.newHashSet());
   }
 
   @Override

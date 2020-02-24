@@ -21,8 +21,11 @@ import com.google.common.collect.Lists;
 import javax.inject.Inject;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
+import org.apache.zeppelin.notebook.AuthorizationService;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
+import org.apache.zeppelin.notebook.NoteManager;
+import org.apache.zeppelin.notebook.NoteMeta;
 import org.apache.zeppelin.notebook.NotebookAuthorization;
 import org.apache.zeppelin.notebook.OldNoteInfo;
 import org.apache.zeppelin.notebook.Paragraph;
@@ -146,16 +149,17 @@ public class NotebookRepoSync implements NotebookRepoWithVersionControl {
   public void mergeAuthorizationInfo() throws IOException {
     LOGGER.info("Merge AuthorizationInfo into note file");
     NotebookAuthorization notebookAuthorization = NotebookAuthorization.getInstance();
+    AuthorizationService authorizationService =
+            new AuthorizationService(new NoteManager(this), ZeppelinConfiguration.create());
     for (int i = 0; i < repos.size(); ++i) {
       NotebookRepo notebookRepo = repos.get(i);
       Map<String, NoteInfo> notesInfo = notebookRepo.list(AuthenticationInfo.ANONYMOUS);
       for (NoteInfo noteInfo : notesInfo.values()) {
-        Note note = notebookRepo.get(noteInfo.getId(), noteInfo.getPath(), AuthenticationInfo.ANONYMOUS);
-        note.setOwners(notebookAuthorization.getOwners(noteInfo.getId()));
-        note.setRunners(notebookAuthorization.getRunners(noteInfo.getId()));
-        note.setReaders(notebookAuthorization.getReaders(noteInfo.getId()));
-        note.setWriters(notebookAuthorization.getWriters(noteInfo.getId()));
-        notebookRepo.save(note, AuthenticationInfo.ANONYMOUS);
+        authorizationService.setOwners(noteInfo.getId(), notebookAuthorization.getOwners(noteInfo.getId()));
+        authorizationService.setRunners(noteInfo.getId(), notebookAuthorization.getRunners(noteInfo.getId()));
+        authorizationService.setReaders(noteInfo.getId(), notebookAuthorization.getReaders(noteInfo.getId()));
+        authorizationService.setWriters(noteInfo.getId(), notebookAuthorization.getWriters(noteInfo.getId()));
+        authorizationService.saveNoteMeta(noteInfo.getId(), AuthenticationInfo.ANONYMOUS);
       }
     }
   }
@@ -201,6 +205,11 @@ public class NotebookRepoSync implements NotebookRepoWithVersionControl {
     return getRepo(0).list(subject);
   }
 
+  @Override
+  public Map<String, NoteMeta> listNoteMeta(AuthenticationInfo subject) throws IOException {
+    return getRepo(0).listNoteMeta(subject);
+  }
+
   /* list from specific repo (for tests) */
   List<NoteInfo> list(int repoIndex, AuthenticationInfo subject) throws IOException {
     return new ArrayList<>(getRepo(repoIndex).list(subject).values());
@@ -212,6 +221,19 @@ public class NotebookRepoSync implements NotebookRepoWithVersionControl {
   @Override
   public Note get(String noteId, String notePath, AuthenticationInfo subject) throws IOException {
     return getRepo(0).get(noteId, notePath, subject);
+  }
+
+  /* get note from specific repo (for tests) */
+  NoteMeta getNoteMeta(int repoIndex, String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+    return getRepo(repoIndex).getNoteMeta(noteId, metaPath, subject);
+  }
+
+  /**
+   *  Returns NoteMeta from Notebook from the first repository
+   */
+  @Override
+  public NoteMeta getNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+    return getRepo(0).getNoteMeta(noteId, metaPath, subject);
   }
 
   /* get note from specific repo (for tests) */
@@ -238,6 +260,41 @@ public class NotebookRepoSync implements NotebookRepoWithVersionControl {
   /* save note to specific repo (for tests) */
   void save(int repoIndex, Note note, AuthenticationInfo subject) throws IOException {
     getRepo(repoIndex).save(note, subject);
+  }
+
+  /**
+   *  Saves to all repositories
+   */
+  @Override
+  public void saveNoteMeta(NoteMeta noteMeta, String metaPath, AuthenticationInfo subject) throws IOException {
+    getRepo(0).saveNoteMeta(noteMeta, metaPath, subject);
+    if (getRepoCount() > 1) {
+      try {
+        getRepo(1).saveNoteMeta(noteMeta, metaPath, subject);
+      }
+      catch (IOException e) {
+        LOGGER.info(e.getMessage() + ": Failed to write to secondary storage");
+      }
+    }
+  }
+
+  @Override
+  public void removeNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+    for (NotebookRepo repo : repos) {
+      repo.removeNoteMeta(noteId, metaPath, subject);
+    }
+  }
+
+  @Override
+  public void moveNoteMeta(String noteId, String metaPath, String newMetaPath, AuthenticationInfo subject) throws IOException {
+    for (NotebookRepo repo : repos) {
+      repo.moveNoteMeta(noteId, metaPath, newMetaPath, subject);
+    }
+  }
+
+  /* save note to specific repo (for tests) */
+  void saveNoteMeta(int repoIndex, NoteMeta noteMeta, String metaPath, AuthenticationInfo subject) throws IOException {
+    getRepo(repoIndex).saveNoteMeta(noteMeta, metaPath, subject);
   }
 
   @Override

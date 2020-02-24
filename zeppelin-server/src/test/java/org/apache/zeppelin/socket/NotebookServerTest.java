@@ -88,7 +88,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
   public static void init() throws Exception {
     AbstractTestRestApi.startUp(NotebookServerTest.class.getSimpleName());
     notebook = TestUtils.getInstance(Notebook.class);
-    authorizationService = new AuthorizationService(notebook, notebook.getConf());
+    authorizationService = new AuthorizationService(notebook.getNoteManager(), notebook.getConf());
     ZeppelinConfiguration conf = ZeppelinConfiguration.create();
     schedulerService = new QuartzSchedulerService(conf, notebook);
     notebookServer = spy(NotebookServer.getInstance());

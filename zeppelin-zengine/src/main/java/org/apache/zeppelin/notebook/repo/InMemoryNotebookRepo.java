@@ -21,6 +21,7 @@ package org.apache.zeppelin.notebook.repo;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
+import org.apache.zeppelin.notebook.NoteMeta;
 import org.apache.zeppelin.user.AuthenticationInfo;
 
 import java.io.IOException;
@@ -44,6 +45,11 @@ public class InMemoryNotebookRepo implements NotebookRepo {
       notesInfo.put(note.getId(), new NoteInfo(note));
     }
     return notesInfo;
+  }
+
+  @Override
+  public Map<String, NoteMeta> listNoteMeta(AuthenticationInfo subject) throws IOException {
+    return null;
   }
 
   @Override
@@ -98,6 +104,26 @@ public class InMemoryNotebookRepo implements NotebookRepo {
     if (!folderPath.startsWith("/")) {
       throw new RuntimeException(String.format("folderPath '%s' is not started with '/'", folderPath));
     }
+  }
+
+  @Override
+  public NoteMeta getNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+    return null;
+  }
+
+  @Override
+  public void saveNoteMeta(NoteMeta noteMeta, String metaPath, AuthenticationInfo subject) throws IOException {
+
+  }
+
+  @Override
+  public void removeNoteMeta(String noteId, String metaPath, AuthenticationInfo subject) throws IOException {
+
+  }
+
+  @Override
+  public void moveNoteMeta(String noteId, String metaPath, String newMetaPath, AuthenticationInfo subject) throws IOException {
+
   }
 
   @Override

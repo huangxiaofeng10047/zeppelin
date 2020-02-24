@@ -39,6 +39,7 @@ import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
+import org.apache.zeppelin.notebook.NoteMeta;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +102,12 @@ public class VFSNotebookRepo implements NotebookRepo {
     return listFolder(rootNotebookFileObject);
   }
 
+  @Override
+  public Map<String, NoteMeta> listNoteMeta(AuthenticationInfo subject) throws IOException {
+    this.rootNotebookFileObject = fsManager.resolveFile(this.rootNotebookFolder);
+    return listNoteMetaFolder(rootNotebookFileObject, subject);
+  }
+
   private Map<String, NoteInfo> listFolder(FileObject fileObject) throws IOException {
     Map<String, NoteInfo> noteInfos = new HashMap<>();
     if (fileObject.isFolder()) {
@@ -123,12 +130,38 @@ public class VFSNotebookRepo implements NotebookRepo {
         } catch (IOException e) {
           LOGGER.warn(e.getMessage());
         }
-
-      } else {
-        LOGGER.debug("Unrecognized note file: " + noteFileName);
       }
     }
     return noteInfos;
+  }
+
+  private Map<String, NoteMeta> listNoteMetaFolder(FileObject fileObject,
+                                                   AuthenticationInfo subject) throws IOException {
+    Map<String, NoteMeta> notesMeta = new HashMap<>();
+    if (fileObject.isFolder()) {
+      if (fileObject.getName().getBaseName().startsWith(".")) {
+        LOGGER.warn("Skip hidden folder: " + fileObject.getName().getPath());
+        return notesMeta;
+      }
+      for (FileObject child : fileObject.getChildren()) {
+        notesMeta.putAll(listNoteMetaFolder(child, subject));
+      }
+    } else {
+      // getPath() method returns a string without root directory in windows, so we use getURI() instead
+      // windows does not support paths with "file:///" prepended. so we replace it by "/"
+      String noteMetaFileName = fileObject.getName().getURI().replace("file:///", "/");
+      if (noteMetaFileName.endsWith(".meta")) {
+        try {
+          String noteId = getNoteId(noteMetaFileName);
+          String noteMetaPath = getNoteMetaPath(rootNotebookFolder, noteMetaFileName);
+          NoteMeta noteMeta = getNoteMeta(noteId, noteMetaPath, subject);
+          notesMeta.put(noteId, noteMeta);
+        } catch (IOException e) {
+          LOGGER.warn(e.getMessage());
+        }
+      }
+    }
+    return notesMeta;
   }
 
   @Override
@@ -141,6 +174,17 @@ public class VFSNotebookRepo implements NotebookRepo {
     // setPath here just for testing, because actually NoteManager will setPath
     note.setPath(notePath);
     return note;
+  }
+
+  @Override
+  public NoteMeta getNoteMeta(String noteId,
+                              String metaPath,
+                              AuthenticationInfo subject) throws IOException {
+    FileObject noteMetaFile = rootNotebookFileObject.resolveFile(buildNoteMetaFileName(noteId, metaPath),
+            NameScope.DESCENDENT);
+    String json = IOUtils.toString(noteMetaFile.getContent().getInputStream(),
+            conf.getString(ConfVars.ZEPPELIN_ENCODING));
+    return NoteMeta.fromJson(json);
   }
 
   @Override
@@ -163,7 +207,28 @@ public class VFSNotebookRepo implements NotebookRepo {
   }
 
   @Override
-  public void move(String noteId, String notePath, String newNotePath,
+  public void saveNoteMeta(NoteMeta noteMeta, String metaPath, AuthenticationInfo subject) throws IOException {
+    String metaFileName = buildNoteMetaFileName(noteMeta.getNoteId(), metaPath);
+    LOGGER.info("Saving note meta for note: " + noteMeta.getNoteId() + " to " + metaFileName);
+    // write to tmp file first, then rename it to the {note_name}_{note_id}.zpln
+    FileObject noteJson = rootNotebookFileObject.resolveFile(
+            buildNoteMetaTempFileName(noteMeta.getNoteId(), metaPath), NameScope.DESCENDENT);
+    OutputStream out = null;
+    try {
+      out = noteJson.getContent().getOutputStream(false);
+      IOUtils.write(noteMeta.toJson().getBytes(conf.getString(ConfVars.ZEPPELIN_ENCODING)), out);
+    } finally {
+      if (out != null) {
+        out.close();
+      }
+    }
+    noteJson.moveTo(rootNotebookFileObject.resolveFile(metaFileName, NameScope.DESCENDENT));
+  }
+
+  @Override
+  public void move(String noteId,
+                   String notePath,
+                   String newNotePath,
                    AuthenticationInfo subject) throws IOException {
     LOGGER.info("Move note " + noteId + " from " + notePath + " to " + newNotePath);
     FileObject fileObject = rootNotebookFileObject.resolveFile(
@@ -173,6 +238,14 @@ public class VFSNotebookRepo implements NotebookRepo {
     // create parent folder first, otherwise move operation will fail
     destFileObject.getParent().createFolder();
     fileObject.moveTo(destFileObject);
+  }
+
+  @Override
+  public void moveNoteMeta(String noteId,
+                           String metaPath,
+                           String newMetaPath,
+                           AuthenticationInfo subject) throws IOException {
+
   }
 
   @Override
@@ -195,6 +268,13 @@ public class VFSNotebookRepo implements NotebookRepo {
     FileObject noteFile = rootNotebookFileObject.resolveFile(
         buildNoteFileName(noteId, notePath), NameScope.DESCENDENT);
     noteFile.delete(Selectors.SELECT_SELF);
+  }
+
+  @Override
+  public void removeNoteMeta(String noteId,
+                             String metaPath,
+                             AuthenticationInfo subject) throws IOException {
+
   }
 
   @Override

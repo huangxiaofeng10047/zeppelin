@@ -149,6 +149,9 @@ public class NotebookService {
       // it's an empty note. so add one paragraph
       note.addNewParagraph(context.getAutheInfo());
       notebook.saveNote(note, context.getAutheInfo());
+      // init noteMeta
+      authorizationService.createNoteMeta(note.getId(), context.getAutheInfo());
+      authorizationService.saveNoteMeta(note.getId(), context.getAutheInfo());
       callback.onSuccess(note, context);
       return note;
     } catch (IOException e) {
@@ -891,8 +894,8 @@ public class NotebookService {
   }
 
   public void moveNoteToTrash(String noteId,
-                                 ServiceContext context,
-                                 ServiceCallback<Note> callback) throws IOException {
+                              ServiceContext context,
+                              ServiceCallback<Note> callback) throws IOException {
     Note note = notebook.getNote(noteId);
     if (note == null) {
       callback.onFailure(new NoteNotFoundException(noteId), context);

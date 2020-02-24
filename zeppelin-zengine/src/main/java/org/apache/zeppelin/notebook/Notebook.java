@@ -126,6 +126,10 @@ public class Notebook {
     this.paragraphJobListener = (ParagraphJobListener) noteEventListener;
   }
 
+  public NoteManager getNoteManager() {
+    return noteManager;
+  }
+
   /**
    * This method will be called only NotebookService to register {@link *
    * org.apache.zeppelin.notebook.ParagraphJobListener}.
@@ -164,7 +168,6 @@ public class Notebook {
     Note note =
         new Note(notePath, defaultInterpreterGroup, replFactory, interpreterSettingManager,
             paragraphJobListener, credentials, noteEventListeners);
-    note.initPermissions(subject);
     noteManager.addNote(note, subject);
     fireNoteCreateEvent(note, subject);
     return note;
@@ -270,6 +273,10 @@ public class Notebook {
   public void saveNote(Note note, AuthenticationInfo subject) throws IOException {
     noteManager.saveNote(note, subject);
     fireNoteUpdateEvent(note, subject);
+  }
+
+  public void saveNoteMeta(NoteMeta noteMeta, AuthenticationInfo subject) throws IOException {
+    noteManager.saveNoteMeta(noteMeta, subject);
   }
 
   public boolean containsNote(String notePath) {
